@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            font-family: 'Arial', sans-serif; 
+            background: linear-gradient(to bottom, #000428, #004e92); 
+            color: white; 
+            overflow-x: hidden; 
+            min-height: 100vh;
+        }
+        
+        /* Mobile First Typography */
+        .hero { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            position: relative; 
+            padding: 1rem;
+        }
+        .hero h1 { 
+            font-size: clamp(2rem, 8vw, 4rem); 
+            margin: 0 0 1.5rem 0; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); 
+            animation: glow 2s ease-in-out infinite alternate; 
+            line-height: 1.2;
+        }
+        
+        @keyframes glow { 
+            from { text-shadow: 0 0 20px #fff, 0 0 30px #ff0000, 0 0 40px #ff0000; } 
+            to { text-shadow: 0 0 20px #fff, 0 0 30px #00ff00, 0 0 40px #00ff00; } 
+        }
+        
+        .snow { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            pointer-events: none; 
+        }
+        
+        .section { 
+            padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 5vw, 2rem); 
+            text-align: center; 
+            background: rgba(255,255,255,0.1); 
+            margin: clamp(1rem, 3vw, 2rem); 
+            border-radius: 10px; 
+        }
+        
+        button { 
+            background: #ff4757; 
+            color: white; 
+            border: none; 
+            padding: clamp(0.8rem, 3vw, 1rem) clamp(1.5rem, 6vw, 2rem); 
+            font-size: clamp(1rem, 4vw, 1.2rem); 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            touch-action: manipulation;
+            min-height: 44px; /* iOS Safari touch target */
+        }
+        button:hover, button:active { 
+            transform: scale(1.05); 
+            background: #ff3742;
+        }
+
+        /* Dialog Styles - Fully Mobile Responsive */
+        .dialog-overlay {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(5px);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            z-index: 1000; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: all 0.3s ease;
+            padding: 1rem;
+        }
+        .dialog-overlay.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+        
+        .dialog-box {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4); 
+            padding: clamp(1.5rem, 5vw, 2rem); 
+            border-radius: 20px; 
+            text-align: center;
+            width: 95%; 
+            max-width: 450px; 
+            max-height: 90vh; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transform: scale(0.7); 
+            transition: transform 0.3s ease; 
+            overflow: hidden;
+            position: relative;
+        }
+        .dialog-overlay.active .dialog-box { 
+            transform: scale(1); 
+        }
+        
+        .dialog-box h2 { 
+            margin: 0 0 1rem 0; 
+            font-size: clamp(1.4rem, 6vw, 1.8rem); 
+            color: white; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+        }
+        
+        .wishes { 
+            background: rgba(255,255,255,0.2); 
+            padding: clamp(1rem, 4vw, 1.5rem); 
+            border-radius: 15px; 
+            margin: 1rem 0; 
+            font-size: clamp(0.9rem, 3.5vw, 1.1rem); 
+            line-height: 1.6; 
+            color: white !important;
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255,255,255,0.2);
+            max-height: 50vh; 
+            overflow-y: auto; 
+            word-wrap: break-word;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            scrollbar-width: thin;
+        }
+        .wishes::-webkit-scrollbar {
+            width: 4px;
+        }
+        .wishes::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        .wishes::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+        
+        .close-btn, .wish-btn, .gift-btn, .final-btn {
+            background: rgba(255,255,255,0.2); 
+            color: white !important; 
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: clamp(0.7rem, 3vw, 0.8rem) clamp(1.2rem, 5vw, 1.5rem); 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
+            transition: all 0.3s ease; 
+            margin: 0.5rem;
+            min-height: 44px;
+        }
+        .close-btn:hover, .wish-btn:hover, .gift-btn:hover, .final-btn:hover,
+        .close-btn:active, .wish-btn:active, .gift-btn:active, .final-btn:active { 
+            background: rgba(255,255,255,0.3); 
+            transform: translateY(-2px); 
+        }
+
+        @keyframes sparkle { 
+            0%, 100% { transform: scale(1) rotate(0deg); } 
+            50% { transform: scale(1.2) rotate(180deg); } 
+        }
+        .crown { 
+            font-size: clamp(2rem, 8vw, 3rem); 
+            animation: sparkle 2s infinite; 
+        }
+
+        /* Dialog Specific Styles */
+        #dialog2 .dialog-box { background: linear-gradient(135deg, #ffd93d, #ff8b13); }
+        #dialog3 .dialog-box { background: linear-gradient(135deg, #a8e6cf, #ffd93d); }
+        #dialog4 { z-index: 1001; }
+        #dialog4 .dialog-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        #dialog4 .wishes {
+            font-size: clamp(0.85rem, 3.2vw, 0.95rem); 
+            line-height: 1.6; 
+        }
+        #dialog4 .highlight {
+            color: #ffd700 !important; 
+            font-weight: bold; 
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            color: rgba(255,255,255,0.6);
+            z-index: 999;
+            font-weight: 300;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* Landscape adjustments */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .hero { height: 80vh; }
+            .dialog-box { max-height: 85vh; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Watermark -->
+    <div class="watermark">By AVS Aka Akshat ✨</div>
+    
+    <div class="hero">
+        <canvas id="snow" class="snow"></canvas>
+        <h1>Merry Christmas!!</h1>
+        <button onclick="openFirstDialog()">Celebrate</button>
+    </div>
+    
+
+    <!-- First Dialog - Christmas Wishes -->
+    <div id="dialog1" class="dialog-overlay">
+        <div class="dialog-box">
+            <h2>🎄 Christmas Wishes 🎄</h2>
+            <div class="wishes">
+                "Merry Christmas, Prapti! May your days be filled with the same magic you find in books and movies, and may this season bring you endless joy, peace, and success."🎅✨
+            </div>
+            <button class="close-btn" onclick="openSecondDialog()">Make a Wish..</button>
+        </div>
+    </div>
+
+    <!-- Second Dialog - Make a Wish -->
+    <div id="dialog2" class="dialog-overlay">
+        <div class="dialog-box">
+            <h2>✨ Make a Wish ✨</h2>
+            <div class="wishes">
+                Close your eyes, make a wish, and let the Christmas magic make it come true! 
+                <br><br>
+                <span class="crown">⭐⭐⭐</span>
+            </div>
+            <button class="wish-btn" onclick="openGiftDialog()">Tap to see your gift</button>
+        </div>
+    </div>
+
+    <!-- Third Dialog - Best Friend Gift -->
+    <div id="dialog3" class="dialog-overlay">
+        <div class="dialog-box">
+            <h2>👑 Your Special Gift 👑</h2>
+            <div class="wishes">
+                🌟 "From today, you are officially crowned as my best friend." 🌟
+                <br><br>
+                <span class="crown">🎀👑🎀</span>
+            </div>
+            <button class="gift-btn" onclick="openFinalDialog()">One more gift</button>
+        </div>
+    </div>
+
+    <!-- Fourth Dialog - Beautiful Poem -->
+    <div id="dialog4" class="dialog-overlay">
+        <div class="dialog-box">
+            <h2>📖 Your Magic Revealed 📖</h2>
+            <div class="wishes">
+                In pages of stories, your soul takes flight,<br>
+                With Harry Potter's magic, you shine so bright.<br><br>
+                A wand of wisdom, a heart so true,<br>
+                Every tale feels richer when read by you.<br><br>
+                Movies flicker, worlds unfold,<br>
+                You see the magic in stories told.<br><br>
+                From silver screens to books you adore,<br>
+                You gather treasures, forever more.<br><br>
+                Talented hands, multitasking grace,<br>
+                A studious spark lights up your face.<br><br>
+                Balancing dreams with discipline's art,<br>
+                You carry brilliance in your heart.<br><br>
+                Best friend, companion, rare and divine,<br>
+                In every chapter, your stars align.<br><br>
+                Prapti, you're magic, a radiant flame,<br>
+                Forever cherished, in friendship's name. ✨
+            </div>
+            <button class="final-btn" onclick="closeAllDialogs()">✨ Truly Magical! ✨</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('snow');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        
+        let particles = [];
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < Math.min(100, window.innerWidth * 0.1); i++) {
+                particles.push({ 
+                    x: Math.random() * canvas.width, 
+                    y: Math.random() * canvas.height - canvas.height, 
+                    r: Math.random() * 4 + 1, 
+                    speed: Math.random() * 2 + 0.5 
+                });
+            }
+        }
+        initParticles();
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+                p.y += p.speed;
+                if (p.y > canvas.height) p.y = -p.r;
+                p.x += Math.sin(p.y * 0.01) * 0.5;
+                if (p.x < 0 || p.x > canvas.width) p.x = Math.random() * canvas.width;
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => { 
+            resizeCanvas();
+            initParticles();
+        });
+
+        // Dialog Functions
+        function openFirstDialog() { document.getElementById('dialog1').classList.add('active'); }
+        function openSecondDialog() { 
+            document.getElementById('dialog1').classList.remove('active');
+            document.getElementById('dialog2').classList.add('active');
+        }
+        function openGiftDialog() { 
+            document.getElementById('dialog2').classList.remove('active');
+            document.getElementById('dialog3').classList.add('active');
+        }
+        function openFinalDialog() { 
+            document.getElementById('dialog3').classList.remove('active');
+            document.getElementById('dialog4').classList.add('active');
+        }
+        function closeAllDialogs() {
+            document.getElementById('dialog1').classList.remove('active');
+            document.getElementById('dialog2').classList.remove('active');
+            document.getElementById('dialog3').classList.remove('active');
+            document.getElementById('dialog4').classList.remove('active');
+        }
+
+        // Close on overlay click & mobile swipe support
+        ['dialog1','dialog2','dialog3','dialog4'].forEach(id => {
+            document.getElementById(id).addEventListener('click', function(e) {
+                if (e.target === this) {
+                    if (id === 'dialog1') openSecondDialog();
+                    else if (id === 'dialog2') openGiftDialog();
+                    else if (id === 'dialog3') openFinalDialog();
+                    else closeAllDialogs();
+                }
+            });
+        });
+
+        // Prevent zoom on iOS
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
